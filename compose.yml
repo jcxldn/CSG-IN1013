@@ -1,0 +1,39 @@
+volumes:
+  mysql:
+
+services:
+  db:
+    image: mysql:lts
+    restart: always
+    env_file:
+      - path: env/common.env.default
+        required: true
+      - path: env/common.env
+        required: false
+      - path: env/db.env.default
+        required: true
+      - path: env/db.env
+        required: false
+    ports:
+      - 127.0.0.1:3306:3306
+    volumes:
+      - mysql:/var/lib/mysql
+
+  phpmyadmin:
+    image: lscr.io/linuxserver/phpmyadmin:latest
+    env_file:
+      - path: env/common.env.default
+        required: true
+      - path: env/common.env
+        required: false
+      - path: env/phpmyadmin.env.default
+        required: true
+      - path: env/phpmyadmin.env
+        required: false
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8080:80
+    links:
+      - db
+    depends_on:
+      - db
